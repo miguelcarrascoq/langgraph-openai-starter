@@ -47,6 +47,16 @@ Estado inicial de ejemplo:
 
 En LangGraph, cada arista (`add_edge`) define el orden de ejecución. Aquí la secuencia es fija: siempre `recibir_pregunta` → `generar_respuesta` → fin.
 
+### Visualización del grafo
+
+Los notebooks y el script pueden mostrar el grafo compilado:
+
+- **Imagen PNG** — `display(Image(app.get_graph().draw_mermaid_png()))` usa la API pública [mermaid.ink](https://mermaid.ink) y requiere internet.
+- **Fallback ASCII** — si la API falla, se imprime `draw_ascii()` (requiere el paquete `grandalf`, incluido en `requirements.txt`).
+- **Fallback texto** — si `grandalf` no está disponible, se muestra el diagrama Mermaid como texto (puedes pegarlo en [mermaid.live](https://mermaid.live)).
+
+Al ejecutar `python langchain.py`, si hay red se guarda además `graph.png` en el directorio actual.
+
 ## Requisitos
 
 - Python 3.10+ (ejecución local), o Docker + Docker Compose (recomendado)

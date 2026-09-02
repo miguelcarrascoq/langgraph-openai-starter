@@ -55,6 +55,13 @@ grafo.set_entry_point("recibir_pregunta")
 # Compila el grafo
 app = grafo.compile()
 
+try:
+    with open("graph.png", "wb") as f:
+        f.write(app.get_graph().draw_mermaid_png(max_retries=3, retry_delay=1.0))
+    print("Grafo guardado en graph.png")
+except Exception as e:
+    print(f"No se pudo guardar graph.png: {e}")
+
 # Ejecutando el grafo
 estado_inicial = {
     "pregunta": "Explica qué es LangGraph de forma sencilla.",
