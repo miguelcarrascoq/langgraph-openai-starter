@@ -74,8 +74,8 @@ El contenedor necesita acceso a internet para llamar a OpenAI. El archivo `.env`
 **Sin Docker Compose:**
 
 ```bash
-docker build -t colab-langgraph .
-docker run --rm --env-file .env colab-langgraph
+docker build -t langgraph-openai-starter .
+docker run --rm --env-file .env langgraph-openai-starter
 ```
 
 ## Setup local (macOS / Homebrew)
