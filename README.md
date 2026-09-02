@@ -2,6 +2,51 @@
 
 Ejemplo mínimo de un grafo con [LangGraph](https://github.com/langchain-ai/langgraph) y [OpenAI](https://platform.openai.com/) via LangChain. El flujo tiene dos nodos: recibir una pregunta y generar una respuesta con un LLM.
 
+## Arquitectura del grafo
+
+El programa define un **StateGraph**: un grafo dirigido donde cada nodo recibe y devuelve un estado compartido. No hay ramificaciones ni ciclos; el flujo es lineal.
+
+```mermaid
+flowchart LR
+  start([Inicio]) --> recibir_pregunta
+  recibir_pregunta["recibir_pregunta\nImprime la pregunta"]
+  generar_respuesta["generar_respuesta\nLlama a OpenAI gpt-4o-mini"]
+  endNode([Fin])
+  recibir_pregunta --> generar_respuesta
+  generar_respuesta --> endNode
+```
+
+### Estado compartido (`Estado`)
+
+Todos los nodos leen y escriben el mismo diccionario tipado:
+
+| Campo       | Tipo   | Descripción                                      |
+|-------------|--------|--------------------------------------------------|
+| `pregunta`  | `str`  | Texto de entrada (definido al invocar el grafo)  |
+| `respuesta` | `str`  | Texto generado por el LLM (vacío al inicio)      |
+
+Estado inicial de ejemplo:
+
+```python
+{"pregunta": "Explica qué es LangGraph de forma sencilla.", "respuesta": ""}
+```
+
+### Nodos
+
+| Nodo                 | Función | Qué hace |
+|----------------------|---------|----------|
+| `recibir_pregunta`   | Entrada | Lee `state["pregunta"]`, la imprime y pasa el estado sin cambios. |
+| `generar_respuesta`  | LLM     | Toma `state["pregunta"]`, llama a `ChatOpenAI` (`gpt-4o-mini`), guarda el resultado en `state["respuesta"]` y devuelve el estado actualizado. |
+
+### Flujo de ejecución
+
+1. **Entrada** — `app.invoke(estado_inicial)` inicia el grafo en `recibir_pregunta`.
+2. **Nodo 1** — Se valida/visualiza la pregunta recibida.
+3. **Nodo 2** — Se envía la pregunta a la API de OpenAI y se almacena la respuesta en el estado.
+4. **Salida** — El grafo termina (`END`); el script imprime `resultado["respuesta"]`.
+
+En LangGraph, cada arista (`add_edge`) define el orden de ejecución. Aquí la secuencia es fija: siempre `recibir_pregunta` → `generar_respuesta` → fin.
+
 ## Requisitos
 
 - Python 3.10+ (ejecución local), o Docker + Docker Compose (recomendado)
