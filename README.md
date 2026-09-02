@@ -4,8 +4,34 @@ Ejemplo mínimo de un grafo con [LangGraph](https://github.com/langchain-ai/lang
 
 ## Requisitos
 
-- Python 3.10+
+- Python 3.10+ (ejecución local), o Docker + Docker Compose (recomendado)
 - Cuenta OpenAI con API key
+
+## Ejecución con Docker (recomendado)
+
+Garantiza el mismo entorno en cualquier máquina.
+
+1. Configura la API key (si aún no tienes `.env`):
+
+   ```bash
+   cp .env.example .env
+   # Edita .env y define OPENAI_API_KEY=sk-...
+   ```
+
+2. Construye y ejecuta:
+
+   ```bash
+   docker compose up --build
+   ```
+
+El contenedor necesita acceso a internet para llamar a OpenAI. El archivo `.env` no se incluye en la imagen; se inyecta en runtime.
+
+**Sin Docker Compose:**
+
+```bash
+docker build -t colab-langgraph .
+docker run --rm --env-file .env colab-langgraph
+```
 
 ## Setup local (macOS / Homebrew)
 
@@ -49,12 +75,15 @@ El script invoca el grafo con una pregunta de ejemplo y muestra la respuesta del
 
 ## Estructura del proyecto
 
-| Archivo            | Descripción                                      |
-|--------------------|--------------------------------------------------|
-| `langchain.py`     | Script principal (grafo LangGraph + OpenAI)      |
-| `langchain.ipynb`  | Notebook original (Colab)                        |
-| `requirements.txt` | Dependencias Python                              |
-| `.env.example`     | Plantilla para `OPENAI_API_KEY`                  |
+| Archivo              | Descripción                                      |
+|----------------------|--------------------------------------------------|
+| `langchain.py`       | Script principal (grafo LangGraph + OpenAI)      |
+| `langchain.ipynb`    | Notebook original (Colab)                        |
+| `requirements.txt`   | Dependencias Python                              |
+| `Dockerfile`         | Imagen Docker del script                         |
+| `docker-compose.yml` | Orquestación con variables de `.env`             |
+| `.dockerignore`      | Archivos excluidos del build Docker              |
+| `.env.example`       | Plantilla para `OPENAI_API_KEY`                  |
 
 ## Referencia
 

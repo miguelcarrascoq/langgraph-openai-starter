@@ -1,0 +1,12 @@
+.venv/
+.git/
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+.env
+.env.*
+!.env.example
+.DS_Store
+langchain.ipynb
+README.md
