@@ -63,10 +63,10 @@ Garantiza el mismo entorno en cualquier máquina.
    # Edita .env y define OPENAI_API_KEY=sk-...
    ```
 
-2. Construye y ejecuta:
+2. Construye y ejecuta el script:
 
    ```bash
-   docker compose up --build
+   docker compose up --build app
    ```
 
 El contenedor necesita acceso a internet para llamar a OpenAI. El archivo `.env` no se incluye en la imagen; se inyecta en runtime.
@@ -77,6 +77,16 @@ El contenedor necesita acceso a internet para llamar a OpenAI. El archivo `.env`
 docker build -t langgraph-openai-starter .
 docker run --rm --env-file .env langgraph-openai-starter
 ```
+
+### Jupyter en Docker
+
+Para ejecutar el notebook dentro del contenedor:
+
+```bash
+docker compose up --build jupyter
+```
+
+Abre [http://localhost:8888](http://localhost:8888) y ejecuta [`langchain_docker.ipynb`](langchain_docker.ipynb). El servicio `jupyter` monta el proyecto en `/app` y inyecta `OPENAI_API_KEY` desde `.env`. Token y contraseña están desactivados para desarrollo local; no uses esta configuración en producción.
 
 ## Setup local (macOS / Homebrew)
 
@@ -114,21 +124,35 @@ python langchain.py
 
 El script invoca el grafo con una pregunta de ejemplo y muestra la respuesta del modelo (`gpt-4o-mini`).
 
-## Notebook (Google Colab)
+## Notebooks
 
-[`langchain.ipynb`](langchain.ipynb) es la versión original para Colab. Si lo abres en Colab, configura el secret `OPENAI_API_KEY` en el panel de Secrets del notebook. Para uso local, adapta la celda de secrets y usa `.env` como en el script.
+Hay tres versiones del mismo grafo, cada una adaptada a su entorno:
+
+| Notebook | Entorno | Cómo ejecutar |
+|----------|---------|---------------|
+| [`langchain_local.ipynb`](langchain_local.ipynb) | Local (venv) | `source .venv/bin/activate`, abrir el notebook y seleccionar el kernel `.venv` |
+| [`langchain_docker.ipynb`](langchain_docker.ipynb) | Jupyter en Docker | `docker compose up --build jupyter` → [http://localhost:8888](http://localhost:8888) |
+| [`langchain_colab.ipynb`](langchain_colab.ipynb) | Google Colab | Abrir en Colab, configurar el secret `OPENAI_API_KEY` en el panel de Secrets |
+
+**Local:** crea `.env` con `OPENAI_API_KEY` (ver sección de configuración). El notebook usa `python-dotenv`.
+
+**Docker:** `OPENAI_API_KEY` se inyecta vía `env_file` en `docker-compose.yml`.
+
+**Colab:** usa `google.colab.userdata` para leer el secret; las dependencias se instalan con `!pip install` en la primera celda.
 
 ## Estructura del proyecto
 
-| Archivo              | Descripción                                      |
-|----------------------|--------------------------------------------------|
-| `langchain.py`       | Script principal (grafo LangGraph + OpenAI)      |
-| `langchain.ipynb`    | Notebook original (Colab)                        |
-| `requirements.txt`   | Dependencias Python                              |
-| `Dockerfile`         | Imagen Docker del script                         |
-| `docker-compose.yml` | Orquestación con variables de `.env`             |
-| `.dockerignore`      | Archivos excluidos del build Docker              |
-| `.env.example`       | Plantilla para `OPENAI_API_KEY`                  |
+| Archivo | Descripción |
+|---------|-------------|
+| `langchain.py` | Script principal (grafo LangGraph + OpenAI) |
+| `langchain_local.ipynb` | Notebook para ejecución local con venv y `.env` |
+| `langchain_docker.ipynb` | Notebook para Jupyter dentro de Docker |
+| `langchain_colab.ipynb` | Notebook para Google Colab |
+| `requirements.txt` | Dependencias Python |
+| `Dockerfile` | Imagen Docker (script + Jupyter) |
+| `docker-compose.yml` | Servicios `app` (script) y `jupyter` (notebook) |
+| `.dockerignore` | Archivos excluidos del build Docker |
+| `.env.example` | Plantilla para `OPENAI_API_KEY` |
 
 ## Referencia
 
